@@ -1,0 +1,80 @@
+commit 2d922d06ee07d2d9ea0fc23bb2d86ba6e98b0086
+Author: Simental Magana, Marcos <marcos.simental.magana@intel.com>
+Date:   Tue Jul 14 15:27:44 2015 -0500
+
+    fix for autospec
+
+diff --git a/Makefile b/Makefile
+index b0a7a5b..ef8b363 100644
+--- a/Makefile
++++ b/Makefile
+@@ -14,14 +14,19 @@
+ VERSION := 1.11
+ RELEASE := 1
+ 
+-CFG_DIR := $(PREFIX)/etc
+-BIN_DIR := $(PREFIX)/usr/bin
+-MAN_DIR := $(PREFIX)/usr/share/man
++PREFIX := /usr
++INSTALL_ROOT := $(PREFIX)/local
++CFG_DIR := $(INSTALL_ROOT)/share/defaults/lcov
++BIN_DIR := $(INSTALL_ROOT)/bin
++MAN_DIR := $(INSTALL_ROOT)/share/man
+ TMP_DIR := /tmp/lcov-tmp.$(shell echo $$$$)
+ FILES   := $(wildcard bin/*) $(wildcard man/*) README CHANGES Makefile \
+ 	   $(wildcard rpm/*) lcovrc
+ 
+-.PHONY: all info clean install uninstall rpms
++.PHONY: build all info clean install uninstall rpms
++
++build:
++	@echo "No build for scripts..."
+ 
+ all: info
+ 
+@@ -37,18 +42,22 @@ clean:
+ 	make -C example clean
+ 
+ install:
+-	bin/install.sh bin/lcov $(BIN_DIR)/lcov -m 755
+-	bin/install.sh bin/genhtml $(BIN_DIR)/genhtml -m 755
+-	bin/install.sh bin/geninfo $(BIN_DIR)/geninfo -m 755
+-	bin/install.sh bin/genpng $(BIN_DIR)/genpng -m 755
+-	bin/install.sh bin/gendesc $(BIN_DIR)/gendesc -m 755
+-	bin/install.sh man/lcov.1 $(MAN_DIR)/man1/lcov.1 -m 644
+-	bin/install.sh man/genhtml.1 $(MAN_DIR)/man1/genhtml.1 -m 644
+-	bin/install.sh man/geninfo.1 $(MAN_DIR)/man1/geninfo.1 -m 644
+-	bin/install.sh man/genpng.1 $(MAN_DIR)/man1/genpng.1 -m 644
+-	bin/install.sh man/gendesc.1 $(MAN_DIR)/man1/gendesc.1 -m 644
+-	bin/install.sh man/lcovrc.5 $(MAN_DIR)/man5/lcovrc.5 -m 644
+-	bin/install.sh lcovrc $(CFG_DIR)/lcovrc -m 644
++	install -d 755 $(BIN_DIR)
++	install -d 755 $(MAN_DIR)/man1
++	install -d 755 $(MAN_DIR)/man5
++	install -d 755 $(CFG_DIR)
++	install -m 755 bin/lcov "$(BIN_DIR)/lcov"
++	install -m 755 bin/genhtml "$(BIN_DIR)/genhtml"
++	install -m 755 bin/geninfo "$(BIN_DIR)/geninfo"
++	install -m 755 bin/genpng "$(BIN_DIR)/genpng"
++	install -m 755 bin/gendesc "$(BIN_DIR)/gendesc"
++	install -m 644 man/lcov.1 "$(MAN_DIR)/man1/lcov.1"
++	install -m 644 man/genhtml.1 "$(MAN_DIR)/man1/genhtml.1"
++	install -m 644 man/geninfo.1 "$(MAN_DIR)/man1/geninfo.1"
++	install -m 644 man/genpng.1 "$(MAN_DIR)/man1/genpng.1"
++	install -m 644 man/gendesc.1 "$(MAN_DIR)/man1/gendesc.1"
++	install -m 644 man/lcovrc.5 "$(MAN_DIR)/man5/lcovrc.5"
++	install -m 644 lcovrc "$(CFG_DIR)/lcovrc"
+ 
+ uninstall:
+ 	bin/install.sh --uninstall bin/lcov $(BIN_DIR)/lcov
+diff --git a/lcovrc b/lcovrc
+index 5a6d4eb..033384a 100644
+--- a/lcovrc
++++ b/lcovrc
+@@ -1,5 +1,5 @@
+ #
+-# /etc/lcovrc - system-wide defaults for LCOV
++# /usr/share/defaults/lcov/lcovrc - system-wide defaults for LCOV
+ #
+ # To change settings for a single user, place a customized copy of this file
+ # at location ~/.lcovrc
