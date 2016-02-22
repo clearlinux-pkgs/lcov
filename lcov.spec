@@ -4,13 +4,15 @@
 #
 Name     : lcov
 Version  : 1.11
-Release  : 5
+Release  : 6
 URL      : http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
 Source0  : http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
 Summary  : A graphical GCOV front-end
 Group    : Development/Tools
 License  : GPL-2.0
 Requires: lcov-bin
+Requires: lcov-data
+Requires: lcov-doc
 Patch1: patch.patch
 
 %description
@@ -22,9 +24,26 @@ for easy navigation within the file structure.
 %package bin
 Summary: bin components for the lcov package.
 Group: Binaries
+Requires: lcov-data
 
 %description bin
 bin components for the lcov package.
+
+
+%package data
+Summary: data components for the lcov package.
+Group: Data
+
+%description data
+data components for the lcov package.
+
+
+%package doc
+Summary: doc components for the lcov package.
+Group: Documentation
+
+%description doc
+doc components for the lcov package.
 
 
 %prep
@@ -40,18 +59,20 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-/share/defaults/lcov/lcovrc
-/share/man/man1/gendesc.1
-/share/man/man1/genhtml.1
-/share/man/man1/geninfo.1
-/share/man/man1/genpng.1
-/share/man/man1/lcov.1
-/share/man/man5/lcovrc.5
 
 %files bin
 %defattr(-,root,root,-)
-/bin/gendesc
-/bin/genhtml
-/bin/geninfo
-/bin/genpng
-/bin/lcov
+/usr/bin/gendesc
+/usr/bin/genhtml
+/usr/bin/geninfo
+/usr/bin/genpng
+/usr/bin/lcov
+
+%files data
+%defattr(-,root,root,-)
+/usr/share/defaults/lcov/lcovrc
+
+%files doc
+%defattr(-,root,root,-)
+%doc /usr/share/man/man1/*
+%doc /usr/share/man/man5/*

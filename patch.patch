@@ -1,11 +1,11 @@
-commit 2d922d06ee07d2d9ea0fc23bb2d86ba6e98b0086
+commit 76caa67e3aa2494e55ef8392da63aa0205bd4df3
 Author: Simental Magana, Marcos <marcos.simental.magana@intel.com>
 Date:   Tue Jul 14 15:27:44 2015 -0500
 
     fix for autospec
 
 diff --git a/Makefile b/Makefile
-index b0a7a5b..ef8b363 100644
+index b0a7a5b..6f0532b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -14,14 +14,19 @@
@@ -17,9 +17,9 @@ index b0a7a5b..ef8b363 100644
 -MAN_DIR := $(PREFIX)/usr/share/man
 +PREFIX := /usr
 +INSTALL_ROOT := $(PREFIX)/local
-+CFG_DIR := $(INSTALL_ROOT)/share/defaults/lcov
-+BIN_DIR := $(INSTALL_ROOT)/bin
-+MAN_DIR := $(INSTALL_ROOT)/share/man
++CFG_DIR := $(INSTALL_ROOT)$(PREFIX)/share/defaults/lcov
++BIN_DIR := $(INSTALL_ROOT)$(PREFIX)/bin
++MAN_DIR := $(INSTALL_ROOT)$(PREFIX)/share/man
  TMP_DIR := /tmp/lcov-tmp.$(shell echo $$$$)
  FILES   := $(wildcard bin/*) $(wildcard man/*) README CHANGES Makefile \
  	   $(wildcard rpm/*) lcovrc
