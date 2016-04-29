@@ -4,7 +4,7 @@
 #
 Name     : lcov
 Version  : 1.11
-Release  : 6
+Release  : 7
 URL      : http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
 Source0  : http://downloads.sourceforge.net/ltp/lcov-1.11.tar.gz
 Summary  : A graphical GCOV front-end
