@@ -1,5 +1,5 @@
 PKG_NAME := lcov
-URL := http://downloads.sourceforge.net/ltp/lcov-1.12.tar.gz
-ARCHIVES :=
+URL := https://sourceforge.net/projects/ltp/files/Coverage%20Analysis/LCOV-1.13/lcov-1.13.tar.gz
+
 
 include ../common/Makefile.common

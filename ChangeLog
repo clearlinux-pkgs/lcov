@@ -1,4 +1,160 @@
-commit de33f51b49dc6d01a285aa73990f03e7d982beb2 (HEAD, tag: v1.12, origin/master, origin/HEAD, master)
+commit b6fb452addaa6a33dcb37c101879b8b5e1e0c34c (HEAD, tag: v1.13, master)
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Mon Dec 19 15:20:40 2016 +0100
+
+    lcov: Finalize release 1.13
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit daca8d9febe52ccf1976240a3b48ffc350dec902 (origin/master, origin/HEAD)
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Mon Dec 19 14:36:00 2016 +0100
+
+    geninfo: Fix 'unexpected end of file' error
+    
+    Use the compiler version as stored in the .gcno file to determine if
+    the file contains function records with split checksums. This fixes
+    the following problem that can occur when lcov is run using a gcov
+    tool of GCC version 4.7 and above on .gcno files compiled with a
+    version below 4.7:
+    
+      # lcov -c -d . -o test.info --initial
+      [...]
+      geninfo: ERROR: test.gcno: reached unexpected end of file
+    
+    Also add missing lcov version to --debug output.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit a90d50e97cb49ea712c94d91cdef1cc21a3c7986
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Wed Dec 14 11:00:08 2016 +0100
+
+    lcov: Remove use of install -D option
+    
+    Some versions of the install tool don't support the -D option, causing
+    a 'make install' call to fail. Fix this by replacing the -D option with
+    two calls to install, first to create all target directory components,
+    then to install the actual files.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+    Reported-by: <deanyang@tencent.com>
+
+commit 6ec3f2398d22e605c1a8019541fb32d26d18044b
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Fri Oct 7 09:47:35 2016 +0200
+
+    genhtml: Fix warning with small genhtml_line_field_width
+    
+    On systems with Perl versions 5.21 and above, genhtml prints a warning
+    similar to the following during processing:
+    
+      genhtml: Negative repeat count does nothing at bin/genhtml line 3854,
+               <SOURCE_HANDLE> line 4.
+    
+    This is due to size calculations resulting in a negative number of
+    padding characters when genhtml_line_field_width is lower than the size
+    of the strings to pad (9). Fix this by disabling padding in these cases.
+    
+    Reported-by: xaizek@openmailbox.org
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit d7cc7591b3a7cc1ec95371d04e4fc46f10b3fd54
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Tue Oct 4 09:50:52 2016 +0200
+
+    geninfo: Fix gcov version detection for XCode 8.0
+    
+    The LLVM gcov version included in XCode 8.0 reports its version in a
+    format that is not understood by geninfo, resulting in the wrong format
+    of coverage data files being expected. Fix this by reworking gcov
+    version detection in geninfo to be more robust.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 68320d932c5ee5537ae1c287fe52603ae2fecf8c
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Mon Aug 22 15:54:56 2016 +0200
+
+    lcov: Update installation mechanism
+    
+    Change default installation location to /usr/local to prevent
+    conflicts with files installed by package managers (reported by
+    Gregory Fong). To achieve this, rename PREFIX to DESTDIR and
+    introduce actual PREFIX Makefile variable and update spec file
+    to install packaged files to previous locations.
+    
+    Also fix spec file to not announce ownership of system directories
+    (reported by and based on patch by Jiri Kastner <jkastner@redhat.com>).
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 04a3c0ed1b4b9750b2ac5060aac0e6d5a3b9da7f
+Author: Benoit Belley <benoit.belley@autodesk.com>
+Date:   Mon Apr 4 18:16:54 2016 -0400
+
+    Pass --no-strip-underscore to c++filt on OS X
+    
+    * The --no-strip-underscope flag is necessary on OS X so that symbols
+      listed by gcov get demangled properly.
+    
+       From the c++filt man page: "On some systems, both the C and C++
+       compilers put an underscore in front of every name.  For example, the
+       C name "foo" gets the low-level name "_foo". This option tells c++filt
+       not to remove the initial underscore.  Whether c++filt removes the
+       underscore by default is target dependent."
+    
+    Signed-off-by: Benoit Belley <benoit.belley@autodesk.com>
+
+commit 632c25a0d1f5e4d2f4fd5b28ce7c8b86d388c91f
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Tue Mar 8 10:51:51 2016 +0100
+
+    lcov: Fix output files being created in / directory
+    
+    When a warning is emitted by lcov before creating an output file,
+    e.g. when a negative coverage count was found while combining
+    tracefiles, lcov tries to create the output file in the root
+    directory (/) instead of the current working directory.
+    
+    This is a result of lcov's warn handler calling a temp file cleanup
+    routine that changes directories to / before trying to remove its
+    temporary directory.
+    
+    Fix this by removing the temp cleanup call from the warn handler.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit e32aab1b4c85503a6592a91326c4b362613e1d66
+Author: Gabriel Laskar <gabriel@lse.epita.fr>
+Date:   Wed Feb 10 09:56:18 2016 +0100
+
+    lcov: Fix --remove pattern matching
+    
+    The --remove option of lcov now consider the pattern passed as parameter
+    as a full path, and not only a part of the filename.
+    
+    This behavior was discovered by using AX_CODE_COVERAGE[1] m4 macro from
+    a directory in $HOME/tmp. The macro itself calls lcov with
+    `--remove "/tmp/*"`.
+    
+    [1]: https://www.gnu.org/software/autoconf-archive/ax_code_coverage.html
+    
+    Signed-off-by: Gabriel Laskar <gabriel@lse.epita.fr>
+
+commit 79e9f281ea893b2f6498b4bad79173b1414aa055
+Author: Reiner Herrmann <reiner@reiner-h.de>
+Date:   Fri Oct 30 20:26:59 2015 +0100
+
+    lcov: use UTC to get timezone-independent date
+    
+    The date is used for updating the time inside manpages.
+    If localtime is used, the date could vary depending on the user's
+    timezone. To enable reproducible builds, UTC is used instead.
+    
+    Signed-off-by: Reiner Herrmann <reiner@reiner-h.de>
+
+commit de33f51b49dc6d01a285aa73990f03e7d982beb2 (tag: v1.12)
 Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
 Date:   Mon Oct 5 17:37:40 2015 +0200
 
