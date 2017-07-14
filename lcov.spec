@@ -4,9 +4,9 @@
 #
 Name     : lcov
 Version  : 1.13
-Release  : 10
-URL      : https://sourceforge.net/projects/ltp/files/Coverage%20Analysis/LCOV-1.13/lcov-1.13.tar.gz
-Source0  : https://sourceforge.net/projects/ltp/files/Coverage%20Analysis/LCOV-1.13/lcov-1.13.tar.gz
+Release  : 11
+URL      : https://github.com/linux-test-project/lcov/releases/download/v1.13/lcov-1.13.tar.gz
+Source0  : https://github.com/linux-test-project/lcov/releases/download/v1.13/lcov-1.13.tar.gz
 Summary  : A graphical GCOV front-end
 Group    : Development/Tools
 License  : GPL-2.0
@@ -55,11 +55,11 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1494864168
+export SOURCE_DATE_EPOCH=1500074419
 make V=1  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1494864168
+export SOURCE_DATE_EPOCH=1500074419
 rm -rf %{buildroot}
 %make_install
 
