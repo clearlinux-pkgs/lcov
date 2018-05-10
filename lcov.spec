@@ -4,7 +4,7 @@
 #
 Name     : lcov
 Version  : 1.13
-Release  : 12
+Release  : 13
 URL      : https://github.com/linux-test-project/lcov/releases/download/v1.13/lcov-1.13.tar.gz
 Source0  : https://github.com/linux-test-project/lcov/releases/download/v1.13/lcov-1.13.tar.gz
 Summary  : A graphical GCOV front-end
