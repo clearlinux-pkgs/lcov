@@ -4,7 +4,7 @@
 #
 Name     : lcov
 Version  : 1.13
-Release  : 13
+Release  : 14
 URL      : https://github.com/linux-test-project/lcov/releases/download/v1.13/lcov-1.13.tar.gz
 Source0  : https://github.com/linux-test-project/lcov/releases/download/v1.13/lcov-1.13.tar.gz
 Summary  : A graphical GCOV front-end
@@ -12,8 +12,10 @@ Group    : Development/Tools
 License  : GPL-2.0
 Requires: lcov-bin
 Requires: lcov-data
-Requires: lcov-doc
+Requires: lcov-license
+Requires: lcov-man
 Patch1: 0001-Fix-Makefile-to-be-compatible-with-simple-autotools-.patch
+Patch2: 0002-geninfo-Add-gcc-8-support.patch
 
 %description
 LCOV is a graphical front-end for GCC's coverage testing tool gcov. It collects
@@ -25,6 +27,8 @@ for easy navigation within the file structure.
 Summary: bin components for the lcov package.
 Group: Binaries
 Requires: lcov-data
+Requires: lcov-license
+Requires: lcov-man
 
 %description bin
 bin components for the lcov package.
@@ -38,29 +42,40 @@ Group: Data
 data components for the lcov package.
 
 
-%package doc
-Summary: doc components for the lcov package.
-Group: Documentation
+%package license
+Summary: license components for the lcov package.
+Group: Default
 
-%description doc
-doc components for the lcov package.
+%description license
+license components for the lcov package.
+
+
+%package man
+Summary: man components for the lcov package.
+Group: Default
+
+%description man
+man components for the lcov package.
 
 
 %prep
 %setup -q -n lcov-1.13
 %patch1 -p1
+%patch2 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1500074419
-make V=1  %{?_smp_mflags}
+export SOURCE_DATE_EPOCH=1533232003
+make  %{?_smp_mflags}
 
 %install
-export SOURCE_DATE_EPOCH=1500074419
+export SOURCE_DATE_EPOCH=1533232003
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/doc/lcov
+cp COPYING %{buildroot}/usr/share/doc/lcov/COPYING
 %make_install
 
 %files
@@ -78,7 +93,15 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /usr/share/defaults/lcov/lcovrc
 
-%files doc
+%files license
 %defattr(-,root,root,-)
-%doc /usr/share/man/man1/*
-%doc /usr/share/man/man5/*
+/usr/share/doc/lcov/COPYING
+
+%files man
+%defattr(-,root,root,-)
+/usr/share/man/man1/gendesc.1
+/usr/share/man/man1/genhtml.1
+/usr/share/man/man1/geninfo.1
+/usr/share/man/man1/genpng.1
+/usr/share/man/man1/lcov.1
+/usr/share/man/man5/lcovrc.5

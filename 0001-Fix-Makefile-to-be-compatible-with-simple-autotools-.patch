@@ -1,7 +1,7 @@
-From 963945531559d0e60d6cd85fb68009327bacf7fa Mon Sep 17 00:00:00 2001
+From bc82dd974867be8fe057ffcaab32945e368a4ebd Mon Sep 17 00:00:00 2001
 From: Ikey Doherty <michael.i.doherty@intel.com>
 Date: Mon, 15 May 2017 17:01:18 +0100
-Subject: [PATCH] Fix Makefile to be compatible with simple autotools based
+Subject: [PATCH 1/2] Fix Makefile to be compatible with simple autotools based
  autospec run
 
 Signed-off-by: Ikey Doherty <michael.i.doherty@intel.com>
@@ -109,5 +109,5 @@ index 8669bdc..270fd95 100644
  # To change settings for a single user, place a customized copy of this file
  # at location ~/.lcovrc
 -- 
-2.13.0
+2.18.0
 
