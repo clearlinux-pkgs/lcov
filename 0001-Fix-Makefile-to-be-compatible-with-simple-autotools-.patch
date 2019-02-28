@@ -27,8 +27,8 @@ index 010fec8..f2645aa 100644
  FILES   := $(wildcard bin/*) $(wildcard man/*) README Makefile \
  	   $(wildcard rpm/*) lcovrc
  
--.PHONY: all info clean install uninstall rpms
-+.PHONY: build all info clean install uninstall rpms
+-.PHONY: all info clean install uninstall rpms test
++.PHONY: build all info clean install uninstall rpms test
 +
 +build:
 +	@echo "No build for scripts..."

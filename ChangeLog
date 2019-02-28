@@ -1,4 +1,526 @@
-commit b6fb452addaa6a33dcb37c101879b8b5e1e0c34c (HEAD, tag: v1.13, master)
+commit 6c7ad581ab9ed66f80050970c0d559c6684613b7 (HEAD, tag: v1.14, origin/master, origin/HEAD, master)
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Thu Feb 28 18:01:39 2019 +0100
+
+    lcov: Finalize release 1.14
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+
+commit 29814f18ec207ebaefa7b41f6e5acc4eca6d7a7a
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Thu Feb 28 17:31:17 2019 +0100
+
+    geninfo: Fix missing FN: entries in result files
+    
+    geninfo sometimes fails to correctly collect function starting lines for
+    some source files, resulting in output files with missing FN: lines.
+    Also such functions are missing from the function list in HTML output.
+    
+    The problem occurs when
+      a) multiple source files contribute to a function implementation (e.g.
+         via including code), and
+      b) the source file that contains the initial function definition
+         is not the source file that contains the most function
+         definitions
+    
+    The problem occurs due to a heuristic in function graph_find_base() that
+    incorrectly determines the source file for a function in this situation.
+    
+    Fix this by using the first file that contributes to a function as the
+    base source file for that function. Only apply this change to data
+    collected using GCC versions 4 and above since earlier versions did not
+    produce stable file orders in graph files.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+    Reported-by: Joshua Cranmer
+
+commit 74bae96e8ef724eb9dbdf126adad17505375e149
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Thu Feb 28 16:15:22 2019 +0100
+
+    Makefile: Make Perl path install-time configurable
+    
+    Add support for specifying the Perl interpreter path used in installed
+    Perl scripts. If no path is specified, the default '/usr/bin/perl' is
+    used.
+    
+    Set variable LCOV_PERL_PATH to specify a different path, for example:
+    
+      make install LCOV_PERL_PATH=/usr/local/bin/perl
+    
+    Unset this variable to keep the current path:
+    
+      make install LCOV_PERL_PATH=
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+
+commit 0b378cba2c0f93d728627aa8750849d3c33de0e1
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Thu Feb 28 14:21:18 2019 +0100
+
+    bin,test: Use /usr/bin/env to locate script interpreters
+    
+    Make use of the /usr/bin/env tool to locate script interpreters. This is
+    needed to locate the correct interpreter in non-standard environments.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+    Suggested-by: Bjørn Forsman <bjorn.forsman@gmail.com>
+    Suggested-by: Mario Costa
+
+commit 2ff99aefbd0c80fe0cfddf1e09a596d7344533e1
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Thu Feb 28 14:09:42 2019 +0100
+
+    bin/*: Remove '-w' from interpreter specifications
+    
+    Replace '-w' flag from Perl interpreter specifications with 'use strict'
+    directive. This is done in preparation of using a more flexible
+    interpreter specification.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+
+commit 3b378b0e76be95971680056d864d0e13f4a08557
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Wed Feb 27 16:33:42 2019 +0100
+
+    geninfo: Fix errors while resolving /././ path components
+    
+    Trying to collect code coverage data for source code that contains
+    repeat ./ references in a path components fails with the following
+    error message:
+    
+      geninfo: WARNING: cannot find an entry for <name>.gcov in .gcno file,
+               skipping file!
+    
+    This is caused by a bug in path normalization function
+    solve_relative_path() that does not correctly process adjacent ./
+    references.
+    
+    Fix this by repeating the resolution of ./ references in path
+    components.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+    Reported-by: Joshua Cranmer
+
+commit 42b55f5a497d2286566d0dd411e3e52fd4d50469
+Author: iignatyev <igor.v.ignatiev@gmail.com>
+Date:   Wed Feb 6 11:35:02 2019 -0800
+
+    geninfo: preserve-paths makes gcov to fail for long pathnames
+    
+    geninfo uses '--preserve-paths' gcov option whenever gcov supports it, this
+    forces gcov to use a whole pathname as a filename for .gcov files. So in cases
+    of quite large pathnames, gcov isn't able to create .gcov files and hence
+    geninfo can't get any data. The fix replaces usage '--preserve-paths' with
+    '--hash-filenames' when it is available.
+    
+    Signed-off-by: Igor Ignatev <igor.v.ignatiev@gmail.com>
+
+commit 04335632c371b5066e722298c9f8c6f11b210201
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Fri Jan 11 13:53:33 2019 +0100
+
+    geninfo: Fix "Can't use an undefined value" error
+    
+    When run on data for source code that causes gcc 8 to generate
+    artificial functions, geninfo emits warnings and eventually aborts
+    processing:
+    
+      geninfo: Use of uninitialized value in hash element at
+               /usr/local/bin/geninfo line 3001.
+      geninfo: Can't use an undefined value as an ARRAY reference at
+               /usr/local/bin/geninfo line 2889.
+    
+    This problem was introduced by commit 9aa0d14a ("geninfo: Ignore
+    artificial functions during --initial"). It is the result of an
+    incomplete removal of artificial functions from internal data.
+    
+    Fix this by explicitcly removing known artificial functions after
+    parsing of graph files completes.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+    Reported-by: Steven Peters <scpeters@osrfoundation.org>
+
+commit 9aa0d14af4446ef46d80356849a97bc961a91f97
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Thu Jan 10 13:20:15 2019 +0100
+
+    geninfo: Ignore artificial functions during --initial
+    
+    Graph files generated by gcc 8 may contain "artifical" functions that do
+    not exist in a source file. geninfo incorrectly generates coverage data
+    for these functions when run with option --initial.
+    
+    Fix this by filtering out artifical functions when generating initial
+    coverage data.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+    Reported-by: Marcin Konarski <marcin.konarski@codestation.org>
+
+commit 1e0df571198229b4701100ce5f596cf1658ede4b
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Thu Jan 10 11:39:07 2019 +0100
+
+    geninfo: Fix data collection for files containing templates
+    
+    When using gcc 8, lcov/geninfo produces corrupt coverage output for
+    source code that contains templates or other constructs that cause gcov
+    to produce multiple versions of output for some lines and branches.
+    
+    This is caused by an incorrect check for duplicate output in function
+    read_gcov_file() that is triggered when a template consists of multiple
+    lines, or contains branches.
+    
+    Fix this by ensuring that duplicate lines in per-instance gcov output are
+    correctly ignored. Only the initial occurrence of each line containing
+    the combined coverage of all instances will be processed by geninfo.
+    
+    Note that for branch coverage, gcov doesn't provide a combined view and
+    geninfo processes all branches provided. This should not be a problem
+    though as genhtml will combine the branch data when generating HTML
+    output.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+
+commit abd8bed2b013334d4ef978abadbfff6cc6f3d55d
+Author: MarcoFalke <falke.marco@gmail.com>
+Date:   Tue Jan 8 12:49:00 2019 +0100
+
+    genhtml: Unconditionally include anchor for each named line
+    
+    This helps with referencing the line in the html when sharing links.
+    
+    Signed-off-by: MarcoFalke <falke.marco@gmail.com>
+
+commit 28675dc7564aaa1ad231a7ac23106512a3956d68
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Tue Dec 18 13:07:58 2018 +0100
+
+    genhtml: Use gmtime for SOURCE_DATE_EPOCH conversion
+    
+    By changing that localtime to gmtime the "Known bug" section of the
+    commit message can be removed.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+    Suggested-by: Bjørn Forsman <bjorn.forsman@gmail.com>
+
+commit 180286bec651928c41de4d6ce3a8760678b38f60
+Author: Bjørn Forsman <bjorn.forsman@gmail.com>
+Date:   Tue Dec 4 14:30:28 2018 +0100
+
+    genhtml: honor the SOURCE_DATE_EPOCH variable
+    
+    Implement the SOURCE_DATE_EPOCH specification[1] for reproducible
+    builds. If SOURCE_DATE_EPOCH is set, use it as timestamp instead of the
+    current time.
+    
+    In this context, reproducible builds means reproducible HTML coverage
+    reports.
+    
+    Known bug: the specification[1] says to defer converting the timestamp
+    to local timezone at presentation time. This is currently not happening;
+    it's converted at build time.
+    
+    [1] https://reproducible-builds.org/specs/source-date-epoch/
+    
+    Signed-off-by: Bjørn Forsman <bjorn.forsman@gmail.com>
+
+commit 41e07cadeeae3054ac22202d5b0b0f0ef6e26467
+Author: Bjørn Forsman <bjorn.forsman@gmail.com>
+Date:   Tue Dec 4 14:30:27 2018 +0100
+
+    Tolerate CDPATH being set
+    
+    If CDPATH is set, cd will print the path it enters, resulting in TOOLDIR
+    containing the path twice, separated by a newline.
+    
+    Signed-off-by: Bjørn Forsman <bjorn.forsman@gmail.com>
+
+commit a3bbe8f0398a3c36b4228cc173e4739d27a863e1
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Mon Dec 10 13:58:10 2018 +0100
+
+    CONTRIBUTING: Clarify patch format requirements
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+
+commit e6750800fe4cb89eda1ff80b7a5fe70fe87ede36
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Tue Nov 13 17:28:17 2018 +0100
+
+    geninfo: Fix accounting of basic blocks in exceptional paths
+    
+    Basic blocks that are not executed and are only reachable via
+    exceptional paths are marked with a '%%%%%' marker in the GCOV output of
+    current GCC versions. Fix geninfo to also recognize this marker.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+    Reported-by: trotux (github user)
+
+commit 94eac0ee870e58630d8052dca1181b0cf802525f
+Author: Peter Oberparleiter <oberpar@linux.ibm.com>
+Date:   Mon Jul 16 13:24:58 2018 +0200
+
+    lcov: Fix branch coverage summary
+    
+    When combining two data files A (without branch coverage data) and B
+    (with branch coverage data), lcov will incorrectly report no branch
+    coverage data for the resulting file in program output, even though the
+    resulting file contains branch coverage data. This only happens when A
+    is specified first during the add operation.
+    
+    This is due to a bug in lcov that loses the correctly combined branch
+    coverage data internally in function brcount_db_combine() when its first
+    parameter is undefined. Fix this by ensuring that the first parameter is
+    an empty hash reference instead.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.ibm.com>
+
+commit a5dd9529f9232b8d901a4d6eb9ae54cae179e5b3
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Wed Mar 7 14:18:55 2018 +0100
+
+    geninfo: Add gcc 8 support
+    
+    Fix errors and incorrect data when trying to collect coverage data
+    for programs compiled with gcc 8.
+    
+    Covers the following gcov-related changes in gcc:
+    
+    .gcov-file format:
+      - Line coverage data can appear multiple times for the same line
+      - Line coverage count can be suffixed by '*' to indicated unexecuted
+        basic blocks in that line
+    
+    .gcno-file format:
+      - new header field 'support unexecuted blocks flag'
+      - new function record fields 'column number', 'ending line number',
+        and 'compiler-generated entity flag'
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit c30d88a3a8096dbb3f968de999480c3dc2dedb5f
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Tue Jan 30 15:12:09 2018 +0100
+
+    genhtml: Implement option to show miss counts
+    
+    Add new command line option --missed that can be used to show the
+    number of missed lines, functions, or branches.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 999abf2447b4df373b135dc3f8ee317350bd95f8
+Author: Benoit Belley <Benoit.Belley@autodesk.com>
+Date:   Fri Oct 6 10:01:28 2017 -0400
+
+    Adding the --include and --exclude options to lcov and geninfo
+    
+    * The --include command-line option allows the user to specify a regular
+      expression for the source files to be included. The command-line
+      option can be repeated to specify multiple patterns. The coverage
+      information is only included for the source files matching at least
+      one of the patterns.
+    
+      The "lcov --capture --include" (or "geninfo --include") option is
+      similar in functionality to the "lcov --extract" command-line
+      option. But, by directly using applying the pattern while capturing
+      coverage data one can often avoid having to run "lcov --extract" as a
+      second pass.
+    
+    * The --exclude command-line option allows the user to specify a regular
+      expression for the source files to be excluded. The command-line
+      option can be repeated to specify multiple patterns. The coverage
+      information is excluded for source files matching at least one of the
+      patterns.
+    
+      The "lcov --capture --exclude" (or "geninfo --exclude") option is
+      similar in functionality to the "lcov --extract" command-line
+      option. But, by directly using applying the pattern while capturing
+      coverage data one can often avoid having to run "lcov --remove" as a
+      second pass.
+    
+    * On one of our code base at Autodesk, this speeds-up the generation of
+      HTML code coverage reports by a factor of 3X.
+    
+    Signed-off-by: Benoit Belley <benoit.belley@autodesk.com>
+
+commit b6a11368c3cdc86c4e147ccd8e539918dfe37900
+Author: Ziqian SUN (Zamir) <zsun@redhat.com>
+Date:   Wed Jul 19 10:58:24 2017 +0800
+
+    Resolve some rpmlint issue in SPEC.
+    
+    Following messages reported by rpmlint on RHEL is fixed by this patch:
+    lcov.src: W: invalid-license GPL
+    lcov.src:9: W: hardcoded-path-in-buildroot-tag
+    /var/tmp/%{name}-%{version}-root
+    lcov.src: E: specfile-error warning: bogus date in %changelog: Fri Oct 8
+    2002 Peter Oberparleiter (Peter.Oberparleiter@de.ibm.com)
+    lcov.noarch: W: non-conffile-in-etc /etc/lcovrc
+    
+    Signed-off-by: Ziqian SUN (Zamir) <zsun@redhat.com>
+    [oberpar@linux.vnet.ibm.com: Corrected license to GPLv2+]
+
+commit a77a7628ef5377c525a0d4904cc0b73eeede4d7c
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Fri Apr 7 15:43:28 2017 +0200
+
+    genhtml: Reduce path resolution overhead
+    
+    Reduce overhead when reading coverage data files by consolidating
+    calls to Cwd:cwd().
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 526c5148ac0add40ef1224d2cdabdec73ce3f899
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Fri Apr 7 15:37:52 2017 +0200
+
+    genhtml: Reduce load times for complex coverage data files
+    
+    genhtml uses a significant amount of time loading coverage data files
+    containing complex branch coverage data (i.e. data with a large number
+    of branches per basic block). Most of this time is spent storing
+    branch coverage data in a vector-based data representation, with an
+    unnecessary amount of cross-checking being done for existing branch
+    data.
+    
+    Fix this by replacing the vector based data representation by two
+    separate representations, scalar for storage and hash for processing,
+    and by moving cross-checking out of the hot path. This results in a
+    significant speedup at the cost of a minor increase in memory usage.
+    
+    Test results for "make -C genhtml_output/ SIZE=large":
+    
+    Original:
+      6 tests executed, 6 passed, 0 failed, 0 skipped (time 768.4s, mem
+      893.8MB)
+    
+    Patched:
+      6 tests executed, 6 passed, 0 failed, 0 skipped (time 202.3s, mem
+      908.10MB)
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 0f07133f184af6670bdf1edf39fca9d2e90e9ad2
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Fri Apr 7 14:38:22 2017 +0200
+
+    test: Add self-tests for genhtml
+    
+    Add some tests for checking basic functionality of genhtml.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 544a6951db25679792bb0648006a897ea564d883
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Fri Apr 7 14:32:47 2017 +0200
+
+    genhtml: Ensure stable block order in branch output
+    
+    Sort order of basic blocks in output of branch coverage data. This
+    allows for a better comparison of output between test cases.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 477957fa4c6c104d5842911682ec17d6ad2d2980
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Thu Apr 6 12:28:11 2017 +0200
+
+    lcov: Reduce load times for complex coverage data files
+    
+    lcov uses a significant amount of time loading coverage data files
+    containing complex branch coverage data (i.e. data with a large number
+    of branches per basic block). Most of this time is spent storing
+    branch coverage data in a vector-based data representation, with an
+    unnecessary amount of cross-checking being done for existing branch
+    data.
+    
+    Fix this by replacing the vector based data representation by two
+    separate representations, scalar for storage and hash for processing,
+    and by moving cross-checking out of the hot path. This results in a
+    significant speedup at the cost of a minor increase in memory usage.
+    
+    Test results for "make test SIZE=large":
+    
+    Original:
+      17 tests executed, 17 passed, 0 failed, 0 skipped (time 1883.9s, mem
+      2459.0MB)
+    
+    Patched:
+      17 tests executed, 17 passed, 0 failed, 0 skipped (time 283.6s, mem
+      2544.2MB)
+    
+    Note that this fix only applies to the lcov tool. The same work is
+    necessary for genhtml.
+    
+    This approach was inspired by a patch by creich.3141592@gmail.com.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 3b397a3f3acdb62080e8366130758cb34703cfbf
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Thu Apr 6 09:01:36 2017 +0200
+
+    test: Improve test framework
+    
+    Various improvements to lcov's self-test framework:
+     - Add test case for lcov --diff
+     - Add new verbosity level
+     - Enable normalization of coverage data files from stdin
+     - Fix lcov_add_concatenated4 test name
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 53a6ce8ef604173b6de874a534a30121392d7cd0
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Thu Mar 30 15:42:56 2017 +0200
+
+    lcov: Add self-tests
+    
+    Add some tests for checking basic functionality of lcov. To run these
+    tests, type:
+    
+    	make test
+    
+    in either the top-level directory, or the test/ sub-directory.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 9753d5c0da107919537e91e504551e4ab3bccc2f
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Thu Mar 30 15:31:34 2017 +0200
+
+    lcov: Fix output on stderr for --summary
+    
+    Some functions of lcov erroneously print informational output to stderr
+    instead of stdout as expected. Fix this by inverting the "to_file" logic
+    in lcov to a "data_stdout" logic. Affected functions are --summary,
+    --reset and --list.
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 25f5d38abad20eeaa407f62f53c3c00dfbbd0bf3
+Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+Date:   Mon Mar 6 09:51:00 2017 +0100
+
+    lcovrc.5: Add genhtml_demangle_cpp default and CLI reference
+    
+    Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
+
+commit 66db744a1d63c5d3b1dee2d8a2ce76e6e06c7255
+Author: Katsuhiko Nishimra <ktns.87@gmail.com>
+Date:   Fri Mar 3 17:47:48 2017 +0900
+
+    Support passing demangle-cpp option via lcovrc
+    
+    This patch allows users to passing the demangle-cpp option to genhtml
+    via lcovrc, alongside with CUI.
+    
+    Signed-off-by: Katsuhiko Nishimra <ktns.87@gmail.com>
+
+commit b6fb452addaa6a33dcb37c101879b8b5e1e0c34c (tag: v1.13)
 Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
 Date:   Mon Dec 19 15:20:40 2016 +0100
 
@@ -6,7 +528,7 @@ Date:   Mon Dec 19 15:20:40 2016 +0100
     
     Signed-off-by: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
 
-commit daca8d9febe52ccf1976240a3b48ffc350dec902 (origin/master, origin/HEAD)
+commit daca8d9febe52ccf1976240a3b48ffc350dec902
 Author: Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
 Date:   Mon Dec 19 14:36:00 2016 +0100
 
