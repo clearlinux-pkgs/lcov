@@ -4,7 +4,7 @@
 #
 Name     : lcov
 Version  : 1.14
-Release  : 15
+Release  : 16
 URL      : https://github.com/linux-test-project/lcov/releases/download/v1.14/lcov-1.14.tar.gz
 Source0  : https://github.com/linux-test-project/lcov/releases/download/v1.14/lcov-1.14.tar.gz
 Summary  : A graphical GCOV front-end
@@ -15,6 +15,8 @@ Requires: lcov-data = %{version}-%{release}
 Requires: lcov-license = %{version}-%{release}
 Requires: lcov-man = %{version}-%{release}
 Patch1: 0001-Fix-Makefile-to-be-compatible-with-simple-autotools-.patch
+Patch2: 0002-geninfo-Add-intermediate-text-format-support.patch
+Patch3: 0003-geninfo-Add-intermediate-JSON-format-support.patch
 
 %description
 LCOV is a graphical front-end for GCC's coverage testing tool gcov. It collects
@@ -58,23 +60,30 @@ man components for the lcov package.
 
 %prep
 %setup -q -n lcov-1.14
+cd %{_builddir}/lcov-1.14
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1551384090
-export LDFLAGS="${LDFLAGS} -fno-lto"
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1576268529
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$CFLAGS -fno-lto "
+export FFLAGS="$CFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
 make  %{?_smp_mflags}
 
 
 %install
-export SOURCE_DATE_EPOCH=1551384090
+export SOURCE_DATE_EPOCH=1576268529
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/lcov
-cp COPYING %{buildroot}/usr/share/package-licenses/lcov/COPYING
+cp %{_builddir}/lcov-1.14/COPYING %{buildroot}/usr/share/package-licenses/lcov/06877624ea5c77efe3b7e39b0f909eda6e25a4ec
 %make_install
 
 %files
@@ -94,7 +103,7 @@ cp COPYING %{buildroot}/usr/share/package-licenses/lcov/COPYING
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/lcov/COPYING
+/usr/share/package-licenses/lcov/06877624ea5c77efe3b7e39b0f909eda6e25a4ec
 
 %files man
 %defattr(0644,root,root,0755)
