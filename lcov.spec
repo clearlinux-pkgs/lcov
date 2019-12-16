@@ -4,7 +4,7 @@
 #
 Name     : lcov
 Version  : 1.14
-Release  : 16
+Release  : 17
 URL      : https://github.com/linux-test-project/lcov/releases/download/v1.14/lcov-1.14.tar.gz
 Source0  : https://github.com/linux-test-project/lcov/releases/download/v1.14/lcov-1.14.tar.gz
 Summary  : A graphical GCOV front-end
@@ -14,6 +14,8 @@ Requires: lcov-bin = %{version}-%{release}
 Requires: lcov-data = %{version}-%{release}
 Requires: lcov-license = %{version}-%{release}
 Requires: lcov-man = %{version}-%{release}
+Requires: perl-PerlIO-gzip
+BuildRequires : perl-PerlIO-gzip
 Patch1: 0001-Fix-Makefile-to-be-compatible-with-simple-autotools-.patch
 Patch2: 0002-geninfo-Add-intermediate-text-format-support.patch
 Patch3: 0003-geninfo-Add-intermediate-JSON-format-support.patch
@@ -70,7 +72,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1576268529
+export SOURCE_DATE_EPOCH=1576522782
 export GCC_IGNORE_WERROR=1
 export CFLAGS="$CFLAGS -fno-lto "
 export FCFLAGS="$CFLAGS -fno-lto "
@@ -80,7 +82,7 @@ make  %{?_smp_mflags}
 
 
 %install
-export SOURCE_DATE_EPOCH=1576268529
+export SOURCE_DATE_EPOCH=1576522782
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/lcov
 cp %{_builddir}/lcov-1.14/COPYING %{buildroot}/usr/share/package-licenses/lcov/06877624ea5c77efe3b7e39b0f909eda6e25a4ec
