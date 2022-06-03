@@ -11,10 +11,10 @@ Signed-off-by: Ikey Doherty <michael.i.doherty@intel.com>
  2 files changed, 31 insertions(+), 27 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index d890bbc..cb0bcd3 100644
+index 62bf293..212ca37 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -21,14 +21,18 @@ export LCOV_PERL_PATH := /usr/bin/perl
+@@ -22,14 +22,18 @@ export LCOV_PERL_PATH := /usr/bin/perl
  
  PREFIX  := /usr/local
  
@@ -35,7 +35,7 @@ index d890bbc..cb0bcd3 100644
  
  all: info
  
-@@ -46,18 +50,18 @@ clean:
+@@ -48,18 +52,18 @@ clean:
  	make -C tests -s clean
  
  install:
@@ -66,7 +66,7 @@ index d890bbc..cb0bcd3 100644
  	bin/updateversion.pl $(DESTDIR)$(BIN_DIR)/lcov $(VERSION) $(RELEASE) $(FULL)
  	bin/updateversion.pl $(DESTDIR)$(BIN_DIR)/genhtml $(VERSION) $(RELEASE) $(FULL)
  	bin/updateversion.pl $(DESTDIR)$(BIN_DIR)/geninfo $(VERSION) $(RELEASE) $(FULL)
-@@ -71,18 +75,18 @@ install:
+@@ -73,18 +77,18 @@ install:
  	bin/updateversion.pl $(DESTDIR)$(MAN_DIR)/man5/lcovrc.5 $(VERSION) $(RELEASE) $(FULL)
  
  uninstall:
@@ -98,7 +98,7 @@ index d890bbc..cb0bcd3 100644
  dist: lcov-$(VERSION).tar.gz lcov-$(VERSION)-$(RELEASE).noarch.rpm \
        lcov-$(VERSION)-$(RELEASE).src.rpm
 diff --git a/lcovrc b/lcovrc
-index d64688e..01add64 100644
+index 4112b8f..4dfa297 100644
 --- a/lcovrc
 +++ b/lcovrc
 @@ -1,5 +1,5 @@
